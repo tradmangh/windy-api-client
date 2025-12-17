@@ -2,6 +2,25 @@ import { WebcamParams, Webcam } from '../types/webcam';
 import { WindyApiError, NetworkError } from '../errors';
 import { CacheAdapter } from '../utils/cache';
 
+interface WebcamApiResponse {
+  id: string;
+  title: string;
+  url: string;
+  thumbnail?: string;
+  thumbnailUrl?: string;
+  location?: {
+    lat: number;
+    lon: number;
+    city?: string;
+    country?: string;
+  };
+  lat?: number;
+  lon?: number;
+  lastUpdated?: string;
+  updated?: string;
+  status?: 'active' | 'inactive';
+}
+
 export async function getWebcams(
   params: WebcamParams,
   apiKey: string,
@@ -65,21 +84,21 @@ export async function getWebcams(
       );
     }
 
-    const data = await response.json();
+    const data = await response.json() as { webcams?: WebcamApiResponse[] };
 
     // Transform the response to match our Webcam interface
-    const webcams: Webcam[] = (data.webcams || []).map((item: any) => ({
+    const webcams: Webcam[] = (data.webcams || []).map((item: WebcamApiResponse) => ({
       id: item.id,
       title: item.title,
       url: item.url,
-      thumbnailUrl: item.thumbnail || item.thumbnailUrl,
+      thumbnailUrl: item.thumbnail || item.thumbnailUrl || '',
       location: {
-        lat: item.location?.lat || item.lat,
-        lon: item.location?.lon || item.lon,
+        lat: item.location?.lat ?? item.lat ?? 0,
+        lon: item.location?.lon ?? item.lon ?? 0,
         city: item.location?.city,
         country: item.location?.country,
       },
-      lastUpdated: new Date(item.lastUpdated || item.updated),
+      lastUpdated: new Date(item.lastUpdated || item.updated || Date.now()),
       status: item.status || 'active',
     }));
 

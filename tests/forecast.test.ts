@@ -167,14 +167,15 @@ describe('Point Forecast API', () => {
 
     it('should handle timeout', async () => {
       global.fetch = vi.fn(
-        () =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve({
-                ok: true,
-                json: async () => mockPointForecastResponse,
-              } as Response);
-            }, 2000);
+        (_url, options) =>
+          new Promise((resolve, reject) => {
+            const signal = options?.signal as AbortSignal;
+            if (signal) {
+              signal.addEventListener('abort', () => {
+                reject(new Error('The operation was aborted'));
+              });
+            }
+            // Never resolve to simulate long request
           })
       );
 
@@ -188,6 +189,6 @@ describe('Point Forecast API', () => {
           100 // 100ms timeout
         )
       ).rejects.toThrow(NetworkError);
-    }, 10000);
+    });
   });
 });

@@ -63,17 +63,17 @@ export async function getPointForecast(
       );
     }
 
-    const data = await response.json();
+    const data = await response.json() as PointForecast;
 
     // Compute wind speed and direction from u,v components
     if (data['wind_u-surface'] && data['wind_v-surface']) {
       data.windSpeed = data['wind_u-surface'].map((u: number, i: number) => {
-        const v = data['wind_v-surface'][i];
+        const v = data['wind_v-surface']![i];
         return Math.sqrt(u * u + v * v);
       });
 
       data.windDirection = data['wind_u-surface'].map((u: number, i: number) => {
-        const v = data['wind_v-surface'][i];
+        const v = data['wind_v-surface']![i];
         let direction = (Math.atan2(u, v) * 180) / Math.PI;
         if (direction < 0) direction += 360;
         return direction;
