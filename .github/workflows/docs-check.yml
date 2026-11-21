@@ -1,0 +1,22 @@
+name: docs-check
+on:
+  pull_request:
+    paths: ['docs/**']
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          if git ls-files 'docs/modules/**/*.md' | grep .; then echo "::error::Markdown under docs/modules"; exit 1; fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          cat > /tmp/pb.yml <<EOF
+          site: { title: check }
+          content: { sources: [{ url: ., start_path: docs, branches: HEAD }] }
+          ui: { bundle: { url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable, snapshot: true } }
+          runtime: { log: { failure_level: warn } }
+          EOF
+          npx -y antora@3.1.10 --to-dir /tmp/out /tmp/pb.yml

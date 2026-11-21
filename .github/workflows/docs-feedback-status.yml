@@ -1,0 +1,22 @@
+name: docs-feedback-status
+on:
+  issues:
+    types: [closed]
+  release:
+    types: [published]
+jobs:
+  notify:
+    if: github.event_name == 'release' || contains(github.event.issue.labels.*.name, 'docs-feedback')
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          SECRET: ${{ secrets.DOCS_BRIDGE_STATUS_SECRET }}
+          URL: ${{ secrets.DOCS_BRIDGE_STATUS_URL }}
+        run: |
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            BODY=$(jq -nc --arg r "$GITHUB_REPOSITORY" --argjson i ${{ github.event.issue.number }} '{repo:$r,issue:$i,event:"fixed"}')
+          else
+            BODY=$(jq -nc --arg r "$GITHUB_REPOSITORY" --arg t "${{ github.event.release.tag_name }}" '{repo:$r,event:"shipped",release:$t}')
+          fi
+          SIG=$(printf '%s' "$BODY" | openssl dgst -sha256 -hmac "$SECRET" -hex | sed 's/^.* //')
+          curl -fsS -X POST -H "content-type: application/json" -H "x-signature: $SIG" -d "$BODY" "$URL"
