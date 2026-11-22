@@ -1,0 +1,5 @@
+name: windy-client
+title: Windy API Client
+version: ~
+nav:
+  - modules/ROOT/nav.adoc

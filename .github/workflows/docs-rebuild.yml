@@ -1,0 +1,12 @@
+name: docs-rebuild
+on:
+  push:
+    branches: [main, dev]
+    paths: ['docs/**']
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -fsS -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" "${{ secrets.COOLIFY_DEPLOY_INTERNAL }}"
+          curl -fsS -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" "${{ secrets.COOLIFY_DEPLOY_PUBLIC }}"
