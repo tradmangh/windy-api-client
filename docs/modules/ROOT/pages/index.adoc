@@ -416,7 +416,7 @@ MIT © Thomas Radman - see link:LICENSE[LICENSE] for details.
 
 == Changelog
 
-See xref:CHANGELOG.adoc[CHANGELOG.adoc] for version history.
+See https://github.com/tradmangh/windy-api-client/blob/main/CHANGELOG.md[CHANGELOG.md] for version history.
 
 == Support
 
