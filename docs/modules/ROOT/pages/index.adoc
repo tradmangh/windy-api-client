@@ -408,7 +408,7 @@ Get one from:
 == Contributing
 
 Contributions are welcome!
-Please see xref:CONTRIBUTING.adoc[CONTRIBUTING.adoc] for guidelines.
+Please see https://github.com/tradmangh/windy-api-client/blob/main/CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
 
 == License
 
